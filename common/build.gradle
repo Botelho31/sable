@@ -22,6 +22,10 @@ def linux(arch) {
     [triple: "${arch}-unknown-linux-gnu", suffix: ".2.17", arch: arch, os: "linux", ext: "so", lib: true]
 }
 
+def linuxMusl(arch) {
+    [triple: "${arch}-unknown-linux-musl", suffix: "", arch: arch, os: "linux_musl", ext: "so", lib: true]
+}
+
 def freebsd(arch) {
     [triple: "${arch}-unknown-freebsd", suffix: "", arch: arch, os: "freebsd", ext: "so", lib: true]
 }
@@ -35,6 +39,8 @@ def supportedTargets = [
         mac("aarch64"),
         linux("x86_64"),
         linux("aarch64"),
+        linuxMusl("x86_64"),
+        linuxMusl("aarch64"),
         windows("x86_64"),
         windows("aarch64"),
 //        freebsd("x86_64"),

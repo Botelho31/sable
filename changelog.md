@@ -1,2 +1,3 @@
+ - Ship musl-linked Rapier natives for Alpine Linux (`*_linux_musl.so`) alongside glibc builds
  - Fix issues with glibc support on Linux Sable Rapier natives
  - Fix Create Blueprints not working on sub-levels

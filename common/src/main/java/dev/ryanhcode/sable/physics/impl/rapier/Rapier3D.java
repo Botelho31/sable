@@ -15,6 +15,7 @@ import org.joml.Matrix3dc;
 import org.joml.Vector3dc;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +41,25 @@ public class Rapier3D {
         loadLibrary();
     }
 
+    /**
+     * Alpine and other musl-based Linux distros need a separate .so from glibc ({@code *_linux.so}) builds.
+     */
+    private static boolean isLinuxMusl() {
+        if (Util.getPlatform() != OS.LINUX) {
+            return false;
+        }
+        if (Files.exists(Paths.get("/lib/ld-musl-x86_64.so.1"))
+                || Files.exists(Paths.get("/lib/ld-musl-aarch64.so.1"))
+                || Files.exists(Paths.get("/lib64/ld-musl-x86_64.so.1"))) {
+            return true;
+        }
+        try {
+            return Files.readString(Paths.get("/proc/self/maps")).contains("libc.musl-");
+        } catch (final IOException ignored) {
+            return false;
+        }
+    }
+
     private static String getNativeName() {
         final String arch;
         if (System.getProperty("os.arch").equals("arm") || System.getProperty("os.arch").startsWith("aarch64")) {
@@ -56,6 +76,9 @@ public class Rapier3D {
         } else {
             if (os != OS.LINUX)
                 Sable.LOGGER.error("Unknown platform '{}' detected, sable will attempt to use linux natives, this may or may not work.", System.getProperty("os.name"));
+            if (isLinuxMusl()) {
+                return LIB_NAME + "_" + arch + "_linux_musl.so";
+            }
             return LIB_NAME + "_" + arch + "_linux.so";
         }
     }
